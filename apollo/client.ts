@@ -6,8 +6,10 @@ import { getMainDefinition } from '@apollo/client/utilities';
 import { onError } from '@apollo/client/link/error';
 import { getJwtToken } from '../libs/auth';
 import { TokenRefreshLink } from 'apollo-link-token-refresh';
+
 let apolloClient: ApolloClient<NormalizedCacheObject>;
 
+// backendga bareer token jonatib yuboradi har bitta requestda
 function getHeaders() {
 	const headers = {} as HeadersInit;
 	const token = getJwtToken();
@@ -27,6 +29,7 @@ const tokenRefreshLink = new TokenRefreshLink({
 	},
 });
 
+// link yaratish uchun apolloga 
 function createIsomorphicLink() {
 	if (typeof window !== 'undefined') {
 		const authLink = new ApolloLink((operation, forward) => {
@@ -82,6 +85,7 @@ function createIsomorphicLink() {
 	}
 }
 
+// apollo yasaydi
 function createApolloClient() {
 	return new ApolloClient({
 		ssrMode: typeof window === 'undefined',
@@ -91,6 +95,7 @@ function createApolloClient() {
 	});
 }
 
+// apollo client yasab beradi bolmasa | bolsa oshani qaytaradi
 export function initializeApollo(initialState = null) {
 	const _apolloClient = apolloClient ?? createApolloClient();
 	if (initialState) _apolloClient.cache.restore(initialState);

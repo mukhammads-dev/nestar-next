@@ -41,6 +41,7 @@ const Join: NextPage = () => {
 		});
 	}, []);
 
+	// call 
 	const doLogin = useCallback(async () => {
 		console.warn(input);
 		try {

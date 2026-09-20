@@ -4,6 +4,8 @@ import { gql } from '@apollo/client';
  *         MEMBER         *
  *************************/
 
+// ← LOGIN, SIGN_UP gql so'rovlari
+
 export const SIGN_UP = gql`
 	mutation Signup($input: MemberInput!) {
 		signup(input: $input) {

@@ -5,6 +5,7 @@ import { CustomJwtPayload } from '../types/customJwtPayload';
 import { sweetMixinErrorAlert } from '../sweetAlert';
 import { LOGIN, SIGN_UP } from '../../apollo/user/mutation';
 
+// accestokendi olib beradi
 export function getJwtToken(): any {
 	if (typeof window !== 'undefined') {
 		return localStorage.getItem('accessToken') ?? '';
@@ -14,14 +15,14 @@ export function getJwtToken(): any {
 export function setJwtToken(token: string) {
 	localStorage.setItem('accessToken', token);
 }
-
+// define
 export const logIn = async (nick: string, password: string): Promise<void> => {
-	try {
+	try {							// method => apollo backend api mutation 
 		const { jwtToken } = await requestJwtToken({ nick, password });
 
 		if (jwtToken) {
-			updateStorage({ jwtToken });
-			updateUserInfo(jwtToken);
+			updateStorage({ jwtToken }); // localstorage.accessToken => Backend
+			updateUserInfo(jwtToken);  // ReactiveVariable => frontend
 		}
 	} catch (err) {
 		console.warn('login err', err);

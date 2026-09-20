@@ -3,6 +3,10 @@ import { makeVar } from '@apollo/client';
 import { CustomJwtPayload } from '../libs/types/customJwtPayload';
 export const themeVar = makeVar({});
 
+//  ← REACTIVE VARIABLES (userVar) ======> 
+// bir martda hosil qilib lyuboy joyda ishlatamiz va qayerda qiymat ozgarsa 
+// qogan componentlarda ozgaradi
+
 export const userVar = makeVar<CustomJwtPayload>({
 	_id: '',
 	memberType: '',

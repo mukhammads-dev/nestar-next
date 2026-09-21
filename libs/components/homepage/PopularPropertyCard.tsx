@@ -6,8 +6,10 @@ import { Property } from '../../types/property/property';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import { REACT_APP_API_URL } from '../../config';
 import { useRouter } from 'next/router';
-import { useReactiveVar } from '@apollo/client';
+import { useQuery, useReactiveVar } from '@apollo/client';
 import { userVar } from '../../../apollo/store';
+import { GET_PROPERTIES } from '../../../apollo/user/query';
+import { T } from '../../types/common';
 
 interface PopularPropertyCardProps {
 	property: Property;
@@ -18,6 +20,24 @@ const PopularPropertyCard = (props: PopularPropertyCardProps) => {
 	const device = useDeviceDetect();
 	const router = useRouter();
 	const user = useReactiveVar(userVar);
+
+	// initial input for GET_PROPERTIES query
+	const initialInput = {};
+
+	/** APOLLO REQUESTS **/
+	const {
+		loading: getPropertiesLoading,
+		data: getPropertiesData,
+		error: getPropertiesError,
+		refetch: getPropertiesRefetch,
+	} = useQuery(GET_PROPERTIES, {
+		fetchPolicy: 'cache-and-network', // birinchi cashedan izlaydi keyin network
+		variables: { input: initialInput },
+		notifyOnNetworkStatusChange: true,
+		onCompleted: (data: T) => {
+			setTrendProperties(data?.getProperties?.list);
+		},
+	});
 
 	/** HANDLERS **/
 
@@ -123,3 +143,7 @@ const PopularPropertyCard = (props: PopularPropertyCardProps) => {
 };
 
 export default PopularPropertyCard;
+function setTrendProperties(list: any) {
+	throw new Error('Function not implemented.');
+}
+

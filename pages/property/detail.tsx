@@ -32,6 +32,7 @@ import { T } from "../../libs/types/common";
 import { Direction, Message } from "../../libs/enums/common.enum";
 import { LIKE_TARGET_PROPERTY } from "../../apollo/user/mutation";
 import { sweetMixinErrorAlert, sweetTopSmallSuccessAlert } from "../../libs/sweetAlert";
+import { GET_COMMENTS } from "../../apollo/admin/query";
 
 SwiperCore.use([Autoplay, Navigation, Pagination]);
 
@@ -96,6 +97,22 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 		notifyOnNetworkStatusChange: true,
 		onCompleted: (data: T) => {
 			if (data?.getProperties.list) setDestinationProperties(data?.getProperties?.list);
+		},
+	});
+
+	const {
+		loading: getCommentsLoading,
+		data: getCommentsData,
+		error: getCommentsError,
+		refetch: getCommentsRefetch,
+	} = useQuery(GET_COMMENTS, {
+		fetchPolicy: 'cache-and-network',
+		variables: { input: initialComment },
+		skip: !commentInquiry.search.commentRefId,
+		notifyOnNetworkStatusChange: true,
+		onCompleted: (data: T) => {
+			if (data?.getComments?.list) setPropertyComments(data?.getComments?.list);
+			setCommentTotal(data?.getComments?.metaCounter[0]?.total ?? 0);
 		},
 	});
 

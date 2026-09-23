@@ -123,7 +123,3 @@ const PopularPropertyCard = (props: PopularPropertyCardProps) => {
 };
 
 export default PopularPropertyCard;
-function setTrendProperties(list: any) {
-	throw new Error('Function not implemented.');
-}
-

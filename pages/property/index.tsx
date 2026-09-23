@@ -1,21 +1,21 @@
 import React, { ChangeEvent, MouseEvent, useEffect, useState } from 'react';
 import { NextPage } from 'next';
 import { Box, Button, Menu, MenuItem, Pagination, Stack, Typography } from '@mui/material';
-import PropertyCard from '../../libs/components/property/PropertyCard';
+import PropertyCard from '../../libs/components/mypage/property/PropertyCard';
 import useDeviceDetect from '../../libs/hooks/useDeviceDetect';
 import withLayoutBasic from '../../libs/components/layout/LayoutBasic';
-import Filter from '../../libs/components/property/Filter';
+import Filter from '../../libs/components/mypage/property/Filter';
 import { useRouter } from 'next/router';
 import { PropertiesInquiry } from '../../libs/types/property/property.input';
 import { Property } from '../../libs/types/property/property';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import KeyboardArrowDownRoundedIcon from '@mui/icons-material/KeyboardArrowDownRounded';
 import { Direction, Message } from '../../libs/enums/common.enum';
-import { useMutation, useQuery } from '@apollo/client';
-import { GET_PROPERTIES } from '../../apollo/user/query';
-import { LIKE_TARGET_PROPERTY } from '../../apollo/user/mutation';
-import { T } from '../../libs/types/common';
-import { sweetTopSmallSuccessAlert, sweetMixinErrorAlert } from '../../libs/sweetAlert';
+import { useMutation, useQuery } from "@apollo/client";
+import { GET_PROPERTIES } from "../../apollo/user/query";
+import { T } from "../../libs/types/common";
+import { LIKE_TARGET_PROPERTY } from "../../apollo/user/mutation";
+import { sweetMixinErrorAlert, sweetTopSmallSuccessAlert } from "../../libs/sweetAlert";
 
 export const getStaticProps = async ({ locale }: any) => ({
 	props: {
@@ -53,6 +53,7 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 			setTotal(data?.getProperties?.metaCounter[0]?.total);
 		},
 	});
+
 	/** LIFECYCLES **/
 	useEffect(() => {
 		if (router.query.input) {
@@ -63,7 +64,11 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 		setCurrentPage(searchFilter.page === undefined ? 1 : searchFilter.page);
 	}, [router]);
 
-	useEffect(() => { }, [searchFilter]);
+	useEffect(() => {
+		// backend refetch
+		console.log('searchFilter', searchFilter);
+		getPropertiesRefetch({ input: searchFilter }).then();
+	}, [searchFilter]);
 
 	/** HANDLERS **/
 	const handlePaginationChange = async (event: ChangeEvent<unknown>, value: number) => {
@@ -85,7 +90,7 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 			if (!user._id) throw new Error(Message.SOMETHING_WENT_WRONG);
 			await likeTargetProperty({ variables: { input: id } });
 			await getPropertiesRefetch({ input: initialInput });
-			await sweetTopSmallSuccessAlert('success', 800);
+			await sweetTopSmallSuccessAlert('succes', 800);
 		} catch (err: any) {
 			console.log('Error, likePropertyHandler:', err.message);
 			sweetMixinErrorAlert(err.message).then();
@@ -174,7 +179,9 @@ const PropertyList: NextPage = ({ initialInput, ...props }: any) => {
 									</div>
 								) : (
 									properties.map((property: Property) => {
-										return <PropertyCard property={property} key={property?._id} />;
+										return (
+											<PropertyCard property={property} likePropertyHandler={likePropertyHandler} key={property?._id} />
+										);
 									})
 								)}
 							</Stack>

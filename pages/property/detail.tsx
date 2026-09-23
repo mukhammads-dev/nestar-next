@@ -1,9 +1,9 @@
 import React, { ChangeEvent, useEffect, useState } from 'react';
-import { Box, Button, Checkbox, Stack, Typography } from '@mui/material';
+import { Box, Button, Checkbox, CircularProgress, Stack, Typography } from '@mui/material';
 import useDeviceDetect from '../../libs/hooks/useDeviceDetect';
 import withLayoutFull from '../../libs/components/layout/LayoutFull';
 import { NextPage } from 'next';
-import Review from '../../libs/components/mypage/property/Review';
+import Review from '../../libs/components/property/Review';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import SwiperCore, { Autoplay, Navigation, Pagination } from 'swiper';
 import PropertyBigCard from '../../libs/components/common/PropertyBigCard';
@@ -27,12 +27,11 @@ import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import 'swiper/css';
 import 'swiper/css/pagination';
-import { GET_PROPERTIES } from "../../apollo/user/query";
+import { GET_PROPERTY, GET_PROPERTIES, GET_COMMENTS } from "../../apollo/user/query";
 import { T } from "../../libs/types/common";
 import { Direction, Message } from "../../libs/enums/common.enum";
 import { CREATE_COMMENT, LIKE_TARGET_PROPERTY } from "../../apollo/user/mutation";
 import { sweetErrorHandling, sweetMixinErrorAlert, sweetTopSmallSuccessAlert } from "../../libs/sweetAlert";
-import { GET_COMMENTS } from "../../apollo/admin/query";
 
 SwiperCore.use([Autoplay, Navigation, Pagination]);
 
@@ -68,8 +67,8 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 		data: getPropertyData,
 		error: getPropertyError,
 		refetch: getPropertyRefetch,
-	} = useQuery(GET_PROPERTIES, {
-		fetchPolicy: 'cache-and-network',
+	} = useQuery(GET_PROPERTY, {
+		fetchPolicy: 'network-only',
 		variables: { input: propertyId },
 		skip: !propertyId,
 		notifyOnNetworkStatusChange: true,
@@ -98,7 +97,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 		skip: !propertyId && !property,
 		notifyOnNetworkStatusChange: true,
 		onCompleted: (data: T) => {
-			if (data?.getProperties.list) setDestinationProperties(data?.getProperties?.list);
+			setDestinationProperties(data?.getProperties?.list ?? []);
 		},
 	});
 
@@ -150,7 +149,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 	const likePropertyHandler = async (user: T, id: string) => {
 		try {
 			if (!id) return;
-			if (!user._id) throw new Error(Message.SOMETHING_WENT_WRONG);
+			if (!user._id) throw new Error(Message.NOT_AUTHENTICATED);
 			await likeTargetProperty({ variables: { input: id } });
 			await getPropertyRefetch({ input: id })
 			await getPropertiesRefetch({
@@ -159,7 +158,7 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 					limit: 4,
 					sort: 'createdAt',
 					direction: Direction.DESC,
-					search: { locationList: [property?.propertyLocation] },
+					search: { locationList: property?.propertyLocation ? [property?.propertyLocation] : [] },
 				},
 			});
 			await sweetTopSmallSuccessAlert('succes', 800);
@@ -184,6 +183,14 @@ const PropertyDetail: NextPage = ({ initialComment, ...props }: any) => {
 			await sweetErrorHandling(err);
 		}
 	}
+
+
+	if (getPropertyLoading) {
+		return (<Stack sx={{ display: "flex", justifyContent: 'center', alignItems: 'center', width: '100%', height: '1000px' }}>
+			<CircularProgress size={'4rem'} />
+		</Stack>)
+	};
+
 
 	if (device === 'mobile') {
 		return <div>PROPERTY DETAIL PAGE</div>;

@@ -12,12 +12,12 @@ import {
 	Tooltip,
 	IconButton,
 } from '@mui/material';
-import useDeviceDetect from '../../hooks/useDeviceDetect';
-import { PropertyLocation, PropertyType } from '../../enums/property.enum';
-import { PropertiesInquiry } from '../../types/property/property.input';
+import useDeviceDetect from '../../../libs/hooks/useDeviceDetect';
+import { PropertyLocation, PropertyType } from '../../../libs/enums/property.enum';
+import { PropertiesInquiry } from '../../../libs/types/property/property.input';
 import { useRouter } from 'next/router';
 import CancelRoundedIcon from '@mui/icons-material/CancelRounded';
-import { propertySquare } from '../../config';
+import { propertySquare } from '../../../libs/config';
 import RefreshIcon from '@mui/icons-material/Refresh';
 
 const MenuProps = {
@@ -43,7 +43,7 @@ const Filter = (props: FilterType) => {
 	const [searchText, setSearchText] = useState<string>('');
 	const [showMore, setShowMore] = useState<boolean>(false);
 
-	/** LIFECYCLES **/
+	/** LIFECYCLE **/
 	useEffect(() => {
 		const queryParams = JSON.stringify({
 			...searchFilter,
@@ -55,27 +55,102 @@ const Filter = (props: FilterType) => {
 		if (searchFilter?.search?.locationList?.length == 0) {
 			delete searchFilter.search.locationList;
 			setShowMore(false);
-			router.push(`/property?input=${queryParams}`, `/property?input=${queryParams}`, { scroll: false }).then();
+			router
+				.push(
+					`/property?input=${JSON.stringify({
+						...searchFilter,
+						search: {
+							...searchFilter.search,
+						},
+					})}`,
+					`/property?input=${JSON.stringify({
+						...searchFilter,
+						search: {
+							...searchFilter.search,
+						},
+					})}`,
+					{ scroll: false },
+				)
+				.then();
 		}
 
 		if (searchFilter?.search?.typeList?.length == 0) {
 			delete searchFilter.search.typeList;
-			router.push(`/property?input=${queryParams}`, `/property?input=${queryParams}`, { scroll: false }).then();
+			router
+				.push(
+					`/property?input=${JSON.stringify({
+						...searchFilter,
+						search: {
+							...searchFilter.search,
+						},
+					})}`,
+					`/property?input=${JSON.stringify({
+						...searchFilter,
+						search: {
+							...searchFilter.search,
+						},
+					})}`,
+					{ scroll: false },
+				)
+				.then();
 		}
 
 		if (searchFilter?.search?.roomsList?.length == 0) {
 			delete searchFilter.search.roomsList;
-			router.push(`/property?input=${queryParams}`, `/property?input=${queryParams}`, { scroll: false }).then();
+			router
+				.push(
+					`/property?input=${JSON.stringify({
+						...searchFilter,
+						search: {
+							...searchFilter.search,
+						},
+					})}`,
+					`/property?input=${queryParams}`,
+					{ scroll: false },
+				)
+				.then();
 		}
 
 		if (searchFilter?.search?.options?.length == 0) {
 			delete searchFilter.search.options;
-			router.push(`/property?input=${queryParams}`, `/property?input=${queryParams}`, { scroll: false }).then();
+			router
+				.push(
+					`/property?input=${JSON.stringify({
+						...searchFilter,
+						search: {
+							...searchFilter.search,
+						},
+					})}`,
+					`/property?input=${JSON.stringify({
+						...searchFilter,
+						search: {
+							...searchFilter.search,
+						},
+					})}`,
+					{ scroll: false },
+				)
+				.then();
 		}
 
 		if (searchFilter?.search?.bedsList?.length == 0) {
 			delete searchFilter.search.bedsList;
-			router.push(`/property?input=${queryParams}`, `/property?input=${queryParams}`, { scroll: false }).then();
+			router
+				.push(
+					`/property?input=${JSON.stringify({
+						...searchFilter,
+						search: {
+							...searchFilter.search,
+						},
+					})}`,
+					`/property?input=${JSON.stringify({
+						...searchFilter,
+						search: {
+							...searchFilter.search,
+						},
+					})}`,
+					{ scroll: false },
+				)
+				.then();
 		}
 
 		if (searchFilter?.search?.locationList) setShowMore(true);
@@ -691,7 +766,7 @@ const Filter = (props: FilterType) => {
 							onChange={propertyOptionSelectHandler}
 						/>
 						<label htmlFor={'Barter'} style={{ cursor: 'pointer' }}>
-							<Typography className="propert-type">Barter</Typography>
+							<Typography className="property-type">Barter</Typography>
 						</label>
 					</Stack>
 					<Stack className={'input-box'}>
@@ -705,7 +780,7 @@ const Filter = (props: FilterType) => {
 							onChange={propertyOptionSelectHandler}
 						/>
 						<label htmlFor={'Rent'} style={{ cursor: 'pointer' }}>
-							<Typography className="propert-type">Rent</Typography>
+							<Typography className="property-type">Rent</Typography>
 						</label>
 					</Stack>
 				</Stack>

@@ -1,7 +1,7 @@
 import React from 'react';
 import useDeviceDetect from '../../hooks/useDeviceDetect';
 import { Stack, Box, Typography } from '@mui/material';
-import Link from 'next/link';
+import NavLink from 'next/link';
 import { REACT_APP_API_URL } from '../../config';
 import IconButton from '@mui/material/IconButton';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
@@ -12,10 +12,11 @@ import { userVar } from '../../../apollo/store';
 
 interface AgentCardProps {
 	agent: any;
+	likeMemberHandler: any;
 }
 
 const AgentCard = (props: AgentCardProps) => {
-	const { agent } = props;
+	const { agent, likeMemberHandler } = props;
 	const device = useDeviceDetect();
 	const user = useReactiveVar(userVar);
 	const imagePath: string = agent?.memberImage
@@ -27,7 +28,7 @@ const AgentCard = (props: AgentCardProps) => {
 	} else {
 		return (
 			<Stack className="agent-general-card">
-				<Link
+				<NavLink
 					href={{
 						pathname: '/agent/detail',
 						query: { agentId: agent?._id },
@@ -45,18 +46,18 @@ const AgentCard = (props: AgentCardProps) => {
 					>
 						<div>{agent?.memberProperties} properties</div>
 					</Box>
-				</Link>
+				</NavLink>
 
 				<Stack className={'agent-desc'}>
 					<Box component={'div'} className={'agent-info'}>
-						<Link
+						<NavLink
 							href={{
 								pathname: '/agent/detail',
 								query: { agentId: 'id' },
 							}}
 						>
 							<strong>{agent?.memberFullName ?? agent?.memberNick}</strong>
-						</Link>
+						</NavLink>
 						<span>Agent</span>
 					</Box>
 					<Box component={'div'} className={'buttons'}>
@@ -64,7 +65,7 @@ const AgentCard = (props: AgentCardProps) => {
 							<RemoveRedEyeIcon />
 						</IconButton>
 						<Typography className="view-cnt">{agent?.memberViews}</Typography>
-						<IconButton color={'default'}>
+						<IconButton onClick={() => likeMemberHandler(user, agent?._id)} color={'default'}>
 							{agent?.meLiked && agent?.meLiked[0]?.myFavorite ? (
 								<FavoriteIcon color={'primary'} />
 							) : (

@@ -46,7 +46,7 @@ const Community: NextPage = ({ initialInput, ...props }: T) => {
 		variables: {
 			input: searchCommunity,
 		},
-		notifyOnNetworkStatusChange: true,
+		notifyOnNetworkStatusChange: true, // data kelganda cashedagi malumotni yangilab beradi
 		onCompleted: (data: T) => {
 			setBoardArticles(data?.getBoardArticles?.list);
 			setTotalCount(data?.getBoardArticles?.metaCounter[0]?.total);

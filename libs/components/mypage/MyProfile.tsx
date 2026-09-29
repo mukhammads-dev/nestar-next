@@ -93,15 +93,8 @@ const MyProfile: NextPage = ({ initialValues, ...props }: any) => {
 		}
 	}, [updateData]);
 
-	const doDisabledCheck = () => {
-		if (
-			updateData.memberNick === '' ||
-			updateData.memberPhone === '' ||
-			updateData.memberAddress === '' ||
-			updateData.memberImage === ''
-		) {
-			return true;
-		}
+	const doDisabledCheck = (): boolean => {
+		return !updateData.memberNick || !updateData.memberPhone || !updateData.memberAddress;
 	};
 
 	console.log('+updateData', updateData);

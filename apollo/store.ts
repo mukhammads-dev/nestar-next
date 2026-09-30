@@ -27,3 +27,7 @@ export const userVar = makeVar<CustomJwtPayload>({
 	memberWarnings: 0,
 	memberBlocks: 0,
 });
+
+//  ← WEBSOCKET ulanishi (Chat komponenti shu orqali gaplashadi)
+// null = hali ulanmagan (server tomonda yoki token hali o'qilmagan)
+export const socketVar = makeVar<WebSocket | null>(null);

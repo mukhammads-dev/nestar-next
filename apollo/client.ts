@@ -7,10 +7,10 @@ import { onError } from '@apollo/client/link/error';
 import { getJwtToken } from '../libs/auth';
 import { TokenRefreshLink } from 'apollo-link-token-refresh';
 import { sweetErrorAlert } from '../libs/sweetAlert';
+import { socketVar } from './store';
 
 let apolloClient: ApolloClient<NormalizedCacheObject>;
 
-// backendga bareer token jonatib yuboradi har bitta requestda
 function getHeaders() {
 	const headers = {} as HeadersInit;
 	const token = getJwtToken();
@@ -30,7 +30,36 @@ const tokenRefreshLink = new TokenRefreshLink({
 	},
 });
 
-// link yaratish uchun apolloga 
+// Custom WebSocket Client
+class LoggingWebSocket {
+	private socket: WebSocket;
+
+	constructor(url: string) {
+		this.socket = new WebSocket(`${url}?token=${getJwtToken()}`);
+		socketVar(this.socket);
+
+		this.socket.onopen = () => {
+			console.log('WebSocket Connection!');
+		};
+
+		this.socket.onmessage = (msg) => {
+			console.log('WebSocket Message =>', msg.data);
+		};
+
+		this.socket.onerror = (error) => {
+			console.log('WebSocket Error =>', error);
+		};
+	}
+
+	send(data: string | ArrayBuffer | SharedArrayBuffer | Blob | ArrayBufferView) {
+		this.socket.send(data);
+	}
+
+	close() {
+		this.socket.close();
+	}
+}
+
 function createIsomorphicLink() {
 	if (typeof window !== 'undefined') {
 		const authLink = new ApolloLink((operation, forward) => {
@@ -59,6 +88,8 @@ function createIsomorphicLink() {
 					return { headers: getHeaders() };
 				},
 			},
+
+			webSocketImpl: LoggingWebSocket,
 		});
 
 		const errorLink = onError(({ graphQLErrors, networkError, response }) => {
@@ -89,7 +120,6 @@ function createIsomorphicLink() {
 	}
 }
 
-// apollo yasaydi
 function createApolloClient() {
 	return new ApolloClient({
 		ssrMode: typeof window === 'undefined',
@@ -99,7 +129,6 @@ function createApolloClient() {
 	});
 }
 
-// apollo client yasab beradi bolmasa | bolsa oshani qaytaradi
 export function initializeApollo(initialState = null) {
 	const _apolloClient = apolloClient ?? createApolloClient();
 	if (initialState) _apolloClient.cache.restore(initialState);
@@ -112,20 +141,3 @@ export function initializeApollo(initialState = null) {
 export function useApollo(initialState: any) {
 	return useMemo(() => initializeApollo(initialState), [initialState]);
 }
-
-/**
-import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
-
-// No Subscription required for develop process
-
-const httpLink = createHttpLink({
-  uri: "http://localhost:3007/graphql",
-});
-
-const client = new ApolloClient({
-  link: httpLink,
-  cache: new InMemoryCache(),
-});
-
-export default client;
-*/

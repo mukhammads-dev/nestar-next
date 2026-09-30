@@ -39,13 +39,13 @@ const NewMessage = (type: any) => {
 interface MessagePayload {
 	event: string;
 	text: string;
-	memberData: Member;
+	memberData: Member | null;
 }
 
 interface InfoPayload {
 	event: string;
 	totalClients: number;
-	memberData: Member;
+	memberData: Member | null;
 	action: string;
 }
 
@@ -62,7 +62,9 @@ const Chat = () => {
 
 	/** LIFECYCLES **/
 	useEffect(() => {
-		socket.onmessage = (msg) => {
+		if (!socket) return;
+
+		socket.onmessage = (msg: MessageEvent) => {
 			const data = JSON.parse(msg.data);
 
 			switch (data.event) {
@@ -120,6 +122,8 @@ const Chat = () => {
 	const onClickHandler = () => {
 		if (!messageInput) {
 			sweetErrorAlert(Messages.error4);
+		} else if (!socket || socket.readyState !== WebSocket.OPEN) {
+			sweetErrorAlert('Chat is not connected. Please try again.');
 		} else {
 			socket.send(JSON.stringify({ event: 'message', data: messageInput }));
 			setMessageInput('');
